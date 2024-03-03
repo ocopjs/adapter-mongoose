@@ -6,7 +6,7 @@ title: Mongoose adapter
 
 # Mongoose database adapter
 
-Bộ chuyển đổi MongoDB cho các tác vụ thêm sửa xoá.
+OcopJS - Chuyển đổi cho Mongoose tới @ocopjs packages. 🇻🇳
 
 > Lưu ý sau khi phiên bản KeystoneJS 5 dừng phát triển tính năng mới và chuyển
 > sang chế độ duy trì để ra mắt phiên bản mới hơn. Chúng tôi đã dựa trên mã
