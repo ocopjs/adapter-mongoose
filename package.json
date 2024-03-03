@@ -1,0 +1,51 @@
+{
+  "name": "@ocopjs/adapter-mongoose",
+  "description": "OcopJS - Mongoose Database adapter.",
+  "version": "1.0.0",
+  "author": "ocopjs",
+  "scripts": {
+    "format": "prettier --write \"**/*.{ts,tsx,md,js}\"",
+    "build": "tsup",
+    "semantic-release": "semantic-release",
+    "test": "jest"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://ocopee.com",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ocopjs/adapter-mongoose.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ocopjs/adapter-mongoose/issues"
+  },
+  "main": "./src/index.js",
+  "engines": {
+    "node": "16"
+  },
+  "dependencies": {
+    "@ocopjs/common": "^1.0.3",
+    "@ocopjs/utils": "1.0.5",
+    "bson": "^4.7.0",
+    "cuid": "^2.1.8",
+    "mongoose": "^5.12.13",
+    "p-settle": "^4.1.1",
+    "p-waterfall": "^3.0.0"
+  },
+  "devDependencies": {
+    "@semantic-release/commit-analyzer": "^11.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/npm": "^11.0.2",
+    "@semantic-release/release-notes-generator": "^12.1.0",
+    "express": "^4.17.1",
+    "jest": "^29.7.0",
+    "mongodb": "^4.9.1",
+    "mongodb-memory-server-core": "^8.4.0",
+    "pluralize": "^8.0.0",
+    "prettier": "^3.2.5",
+    "semantic-release": "^23.0.2"
+  }
+}
