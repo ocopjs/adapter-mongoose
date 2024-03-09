@@ -5,7 +5,6 @@
   "author": "ocopjs",
   "scripts": {
     "format": "prettier --write \"**/*.{ts,tsx,md,js}\"",
-    "build": "tsup",
     "semantic-release": "semantic-release",
     "test": "jest"
   },
