@@ -9,7 +9,7 @@ dependencies:
     specifier: ^1.0.3
     version: 1.0.3
   '@ocopjs/utils':
-    specifier: 1.0.5
+    specifier: ^1.0.5
     version: 1.0.5
   bson:
     specifier: ^4.7.0

@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@ocopjs/common": "^1.0.3",
-    "@ocopjs/utils": "1.0.5",
+    "@ocopjs/utils": "^1.0.5",
     "bson": "^4.7.0",
     "cuid": "^2.1.8",
     "mongoose": "^5.12.13",
