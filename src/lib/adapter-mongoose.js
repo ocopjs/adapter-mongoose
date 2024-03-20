@@ -27,6 +27,7 @@ const { queryParser } = require("./query-parser");
 const debugMongoose = () => !!process.env.DEBUG_MONGOOSE;
 
 class MongooseAdapter extends BaseOcopAdapter {
+  static onQuery;
   constructor() {
     super(...arguments);
     this.listAdapterClass = MongooseListAdapter;
@@ -660,15 +661,22 @@ class MongooseListAdapter extends BaseListAdapter {
     // Run the query against the given database and collection
     const pipeline = pipelineBuilder(queryTree);
 
-    if (process.env.LOG_PIPELINE == "true") {
-      const filter = pipeline?.find((i) => !!i.$match);
-      console.log(this.key, filter?.$match, lookups);
-    }
-
+    const start = Date.now();
     const ret = await this.model
       .aggregate([...pipeline, ...lookups])
       .exec()
       .then((foundItems) => {
+        const end = Date.now();
+        const duration = end - start;
+        if (typeof MongooseAdapter.onQuery === "function") {
+          MongooseAdapter.onQuery({
+            key: this.key,
+            duration,
+            pipeline,
+            lookups,
+          });
+        }
+
         if (meta) {
           // When there are no items, we get undefined back, so we simulate the
           // normal result of 0 items.
