@@ -28,6 +28,8 @@ const debugMongoose = () => !!process.env.DEBUG_MONGOOSE;
 
 class MongooseAdapter extends BaseOcopAdapter {
   static onQuery;
+  static getCache;
+  static setCache;
   constructor() {
     super(...arguments);
     this.listAdapterClass = MongooseListAdapter;
@@ -43,8 +45,7 @@ class MongooseAdapter extends BaseOcopAdapter {
   async _connect() {
     const { mongoUri, ...mongooseConfig } = this.config;
     // Default to the localhost instance
-    let uri =
-      mongoUri ||
+    let uri = mongoUri ||
       process.env.CONNECT_TO ||
       process.env.DATABASE_URL ||
       process.env.MONGO_URI ||
@@ -84,7 +85,7 @@ class MongooseAdapter extends BaseOcopAdapter {
     // Then...
     return await pSettle(
       Object.values(this.listAdapters).map((listAdapter) =>
-        listAdapter._postConnect({ rels }),
+        listAdapter._postConnect({ rels })
       ),
     );
   }
@@ -191,8 +192,9 @@ class MongooseListAdapter extends BaseListAdapter {
 
     const { configureMongooseSchema, mongooseSchemaOptions } = config;
 
-    this.getListAdapterByKey =
-      parentAdapter.getListAdapterByKey.bind(parentAdapter);
+    this.getListAdapterByKey = parentAdapter.getListAdapterByKey.bind(
+      parentAdapter,
+    );
     this.mongoose = parentAdapter.mongoose;
     this.configureMongooseSchema = configureMongooseSchema;
     this.schema = new parentAdapter.mongoose.Schema(
@@ -536,7 +538,7 @@ class MongooseListAdapter extends BaseListAdapter {
                 });
               }
             }),
-        ),
+        )
       ),
     );
 
@@ -548,7 +550,7 @@ class MongooseListAdapter extends BaseListAdapter {
             tableName === this.key && left.listKey === left.refListKey,
         )
         .map(({ columnName, tableName }) =>
-          this._setNullByValue({ tableName, columnName, value: id }),
+          this._setNullByValue({ tableName, columnName, value: id })
         ),
     );
 
@@ -606,10 +608,12 @@ class MongooseListAdapter extends BaseListAdapter {
     // { where: { a: 'A', b: { where: { c: 'C' } } }, skip: 10 }
     //       => { a: 'A', b: { c: 'C' }, $skip: 10 }
     const graphQlQueryToMongoJoinQuery = ({ where, ...modifiers }) => ({
-      ...mapKeys(where || {}, (whereElement) =>
-        getType(whereElement) === "Object" && whereElement.where
-          ? graphQlQueryToMongoJoinQuery(whereElement) // Recursively traverse relationship fields
-          : whereElement,
+      ...mapKeys(
+        where || {},
+        (whereElement) =>
+          getType(whereElement) === "Object" && whereElement.where
+            ? graphQlQueryToMongoJoinQuery(whereElement) // Recursively traverse relationship fields
+            : whereElement,
       ),
       ...mapKeyNames(
         pick(modifiers, ["search", "sortBy", "orderBy", "skip", "first"]),
@@ -660,10 +664,16 @@ class MongooseListAdapter extends BaseListAdapter {
       });
     // Run the query against the given database and collection
     const pipeline = pipelineBuilder(queryTree);
+    const aggregation = [...pipeline, ...lookups];
+
+    if (typeof MongooseAdapter.getCache === "function") {
+      const cached = await MongooseAdapter.getCache(aggregation);
+      if (cached) return cached;
+    }
 
     const start = Date.now();
     const ret = await this.model
-      .aggregate([...pipeline, ...lookups])
+      .aggregate(aggregation)
       .exec()
       .then((foundItems) => {
         const end = Date.now();
@@ -672,8 +682,7 @@ class MongooseListAdapter extends BaseListAdapter {
           MongooseAdapter.onQuery({
             key: this.key,
             duration,
-            pipeline,
-            lookups,
+            aggregation,
           });
         }
 
@@ -687,6 +696,11 @@ class MongooseListAdapter extends BaseListAdapter {
         }
         return foundItems;
       });
+
+    if (typeof MongooseAdapter.setCache === "function") {
+      await MongooseAdapter.setCache(aggregation, ret);
+    }
+
     return ret;
   }
 }
