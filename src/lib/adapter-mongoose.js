@@ -742,6 +742,9 @@ class MongooseFieldAdapter extends BaseFieldAdapter {
    */
   mergeSchemaOptions(schemaOptions, config) {
     const { mongooseOptions } = config;
+    schemaOptions.index =
+      !config?.noIndexed && (this.isIndexed || this.isRelationship);
+
     // Applying these config to all field types is probably wrong;
     // ie. unique constraints on Checkboxes, Files, etc. probably don't make sense
     if (this.isUnique) {
@@ -750,11 +753,8 @@ class MongooseFieldAdapter extends BaseFieldAdapter {
       // options object, it would be `undefined`, which would cause Mongoose to
       // drop and recreate all indexes.
       schemaOptions.unique = true;
-    }
-
-    if (!config?.noIndexed && (this.isIndexed || this.isRelationship)) {
       schemaOptions.index = true;
-    } else schemaOptions.index = false;
+    }
 
     return { ...schemaOptions, ...mongooseOptions };
   }
