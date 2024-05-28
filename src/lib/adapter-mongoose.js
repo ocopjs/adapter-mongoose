@@ -104,7 +104,6 @@ class MongooseAdapter extends BaseOcopAdapter {
 
     schema.add({ [leftFkPath]: {} });
     schema.add({ [rightFkPath]: {} });
-
     // create 2 way indexes for reference fields
     schema.index({ [leftFkPath]: 1 });
     schema.index({ [rightFkPath]: 1 });
@@ -235,6 +234,7 @@ class MongooseListAdapter extends BaseListAdapter {
     if (this.configureMongooseSchema) {
       this.configureMongooseSchema(this.schema, { mongoose: this.mongoose });
     }
+
     this.schema.index({ name: "text" });
     // 4th param is 'skipInit' which avoids calling `model.init()`.
     // We call model.init() later, after we have a connection up and running to
@@ -737,7 +737,11 @@ class MongooseFieldAdapter extends BaseFieldAdapter {
     return (a) => validator(a) || typeof a === "undefined" || a === null;
   }
 
-  mergeSchemaOptions(schemaOptions, { mongooseOptions }) {
+  /**
+   * Hàm này được gọi bởi các Field Data Interface Implement trong hàm `addToMongooseSchema`
+   */
+  mergeSchemaOptions(schemaOptions, config) {
+    const { mongooseOptions } = config;
     // Applying these config to all field types is probably wrong;
     // ie. unique constraints on Checkboxes, Files, etc. probably don't make sense
     if (this.isUnique) {
@@ -747,9 +751,11 @@ class MongooseFieldAdapter extends BaseFieldAdapter {
       // drop and recreate all indexes.
       schemaOptions.unique = true;
     }
-    if (this.isIndexed || this.isRelationship) {
+
+    if (!config?.noIndexed && (this.isIndexed || this.isRelationship)) {
       schemaOptions.index = true;
-    }
+    } else schemaOptions.index = false;
+
     return { ...schemaOptions, ...mongooseOptions };
   }
 
