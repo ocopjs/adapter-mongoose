@@ -153,8 +153,8 @@ function pipelineBuilder({
   );
 
   let pipline = [
-    ...flatten(relationships.map(relationshipPipeline)),
     matchTerm && { $match: matchTerm },
+    ...flatten(relationships.map(relationshipPipeline)),
     { $addFields: { id: "$_id" } },
     excludeFields &&
       excludeFields.length && { $project: defaultObj(excludeFields, 0) },
