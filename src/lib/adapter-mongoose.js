@@ -681,6 +681,7 @@ class MongooseListAdapter extends BaseListAdapter {
             key: this.key,
             duration,
             aggregation,
+            queryTree,
           });
         }
 
