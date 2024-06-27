@@ -55,8 +55,8 @@ const lookupStage = ({
     as,
     let: { tmpVar: `$${targetKey}` },
     pipeline: [
-      { $match: { $expr: { $eq: [`$${foreignKey}`, "$$tmpVar"] } } },
       ...extraPipeline,
+      { $match: { $expr: { $eq: [`$${foreignKey}`, "$$tmpVar"] } } },
     ],
   },
 });
@@ -153,8 +153,8 @@ function pipelineBuilder({
   );
 
   let pipline = [
-    matchTerm && { $match: matchTerm },
     ...flatten(relationships.map(relationshipPipeline)),
+    matchTerm && { $match: matchTerm },
     { $addFields: { id: "$_id" } },
     excludeFields &&
       excludeFields.length && { $project: defaultObj(excludeFields, 0) },

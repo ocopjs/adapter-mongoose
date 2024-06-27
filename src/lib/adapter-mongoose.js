@@ -28,6 +28,7 @@ const debugMongoose = () => !!process.env.DEBUG_MONGOOSE;
 
 class MongooseAdapter extends BaseOcopAdapter {
   static onQuery;
+  static onError;
   static getCache;
   static setCache;
   constructor() {
@@ -694,6 +695,17 @@ class MongooseListAdapter extends BaseListAdapter {
           return foundItems[0];
         }
         return foundItems;
+      })
+      .catch((e) => {
+        if (typeof MongooseAdapter.onError === "function") {
+          MongooseAdapter.onError({
+            key: this.key,
+            message: e.message,
+            duration,
+            aggregation,
+            queryTree,
+          });
+        }
       });
 
     if (typeof MongooseAdapter.setCache === "function") {
