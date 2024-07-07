@@ -1,7 +1,7 @@
 {
   "name": "@ocopjs/adapter-mongoose",
   "description": "OcopJS - Chuyển đổi cho Mongoose tới @ocopjs packages. 🇻🇳",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": "ocopjs",
   "scripts": {
     "format": "prettier --write \"**/*.{ts,tsx,md,js}\"",
