@@ -236,7 +236,14 @@ class MongooseListAdapter extends BaseListAdapter {
       this.configureMongooseSchema(this.schema, { mongoose: this.mongoose });
     }
 
-    this.schema.index({ name: "text" });
+    this.schema.index(
+      { name: "text" },
+      {
+        default_language: "none",
+        language_override: "none",
+      },
+    );
+
     // 4th param is 'skipInit' which avoids calling `model.init()`.
     // We call model.init() later, after we have a connection up and running to
     // avoid issues with Mongoose's lazy queue and setting up the indexes.
