@@ -671,7 +671,6 @@ class MongooseListAdapter extends BaseListAdapter {
     // Run the query against the given database and collection
     const pipeline = pipelineBuilder(queryTree);
     const aggregation = [...pipeline, ...lookups];
-
     if (typeof MongooseAdapter.getCache === "function") {
       const cached = await MongooseAdapter.getCache(this.key, aggregation);
       if (cached) return cached;

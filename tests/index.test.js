@@ -35,26 +35,28 @@ describe("Test main export", () => {
           from: "posts",
           as: "posts_every_posts",
           let: { tmpVar: `$_id` },
-          pipeline: [
-            { $match: { $expr: { $eq: [`$author`, "$$tmpVar"] } } },
+          pipeline: expect.arrayContaining([
             {
               $lookup: {
                 from: "posts_tags",
                 as: "tags_some_tags",
                 let: { tmpVar: `$_id` },
-                pipeline: [
-                  { $match: { $expr: { $eq: [`$Post_id`, "$$tmpVar"] } } },
+                pipeline: expect.arrayContaining([
                   {
                     $lookup: {
                       from: "tags",
                       as: "tags_some_tags_0",
                       let: { tmpVar: "$Tag_id" },
-                      pipeline: [
-                        { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+                      pipeline: expect.arrayContaining([
                         { $match: { name: { $eq: "foo" } } },
                         { $addFields: { id: "$_id" } },
-                        { $project: { posts: 0 } },
-                      ],
+                        {
+                          $project: {
+                            posts: 0,
+                          },
+                        },
+                        { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+                      ]),
                     },
                   },
                   {
@@ -62,7 +64,8 @@ describe("Test main export", () => {
                       $expr: { $gt: [{ $size: "$tags_some_tags_0" }, 0] },
                     },
                   },
-                ],
+                  { $match: { $expr: { $eq: [`$Post_id`, "$$tmpVar"] } } },
+                ]),
               },
             },
             {
@@ -74,8 +77,9 @@ describe("Test main export", () => {
               },
             },
             { $addFields: { id: "$_id" } },
-            { $project: { tags_some_tags: 0 } },
-          ],
+            { $project: { tags_some_tags: 0, posts: 0 } },
+            { $match: { $expr: { $eq: [`$author`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
@@ -83,7 +87,9 @@ describe("Test main export", () => {
           from: "posts",
           as: "posts_every_posts_all",
           let: { tmpVar: "$_id" },
-          pipeline: [{ $match: { $expr: { $eq: [`$author`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$author`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {

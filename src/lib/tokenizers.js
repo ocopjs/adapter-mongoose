@@ -1,6 +1,5 @@
-const cuid = require("cuid");
+const cuid2 = require("@paralleldrive/cuid2");
 const { objMerge, getType, escapeRegExp } = require("@ocopjs/utils");
-
 const getRelatedListAdapterFromQueryPath = (listAdapter, queryPath) => {
   if (!listAdapter) {
     throw new Error("Must provide a list adapter instance");
@@ -60,7 +59,12 @@ const getRelatedListAdapterFromQueryPath = (listAdapter, queryPath) => {
   return foundListAdapter;
 };
 
-const relationshipTokenizer = (listAdapter, queryKey, path, getUID = cuid) => {
+const relationshipTokenizer = (
+  listAdapter,
+  queryKey,
+  path,
+  getUID = cuid2.createId,
+) => {
   const refListAdapter = getRelatedListAdapterFromQueryPath(listAdapter, path);
   const fieldAdapter = refListAdapter.fieldAdapters
     .filter((adapter) => adapter.isRelationship)

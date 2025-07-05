@@ -35,7 +35,7 @@ let mongoServer;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  const mongoUri = await mongoServer.getUri();
+  const mongoUri = mongoServer.getUri();
   mongoConnection = await MongoClient.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

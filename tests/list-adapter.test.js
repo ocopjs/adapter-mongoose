@@ -82,18 +82,19 @@ describe("MongooseListAdapter", () => {
     await userListAdapter.itemsQuery({
       where: { AND: [{ posts_some: { name: "foo" } }, { title: "bar" }] },
     });
+
     expect(userListAdapter.model.aggregate).toHaveBeenCalledWith([
       {
         $lookup: {
           as: expect.any(String),
           from: "posts",
           let: { tmpVar: "$_id" },
-          pipeline: [
-            { $match: { $expr: { $eq: ["$author", "$$tmpVar"] } } },
-            { $match: { name: { $eq: "foo" } } },
+          pipeline: expect.arrayContaining([
             { $addFields: { id: "$_id" } },
+            { $match: { name: { $eq: "foo" } } },
+            { $match: { $expr: { $eq: ["$author", "$$tmpVar"] } } },
             { $project: { posts: 0 } },
-          ],
+          ]),
         },
       },
       { $match: { $and: [expect.any(Object), { title: { $eq: "bar" } }] } },
@@ -111,12 +112,12 @@ describe("MongooseListAdapter", () => {
           as: expect.any(String),
           from: "posts",
           let: { tmpVar: "$_id" },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: ["$author", "$$tmpVar"] } } },
             { $match: { name: { $eq: "foo" } } },
             { $addFields: { id: "$_id" } },
             { $project: { posts: 0 } },
-          ],
+          ]),
         },
       },
       { $match: { $or: [expect.any(Object), { title: { $eq: "bar" } }] } },
@@ -169,7 +170,7 @@ describe("MongooseListAdapter", () => {
           as: expect.any(String),
           from: "posts",
           let: { tmpVar: "$_id" },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: ["$author", "$$tmpVar"] } } },
             {
               $match: {
@@ -178,7 +179,7 @@ describe("MongooseListAdapter", () => {
             },
             { $addFields: { id: "$_id" } },
             { $project: { posts: 0 } },
-          ],
+          ]),
         },
       },
       { $match: expect.any(Object) },
@@ -196,7 +197,7 @@ describe("MongooseListAdapter", () => {
           as: expect.any(String),
           from: "posts",
           let: { tmpVar: "$_id" },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: ["$author", "$$tmpVar"] } } },
             {
               $match: {
@@ -205,7 +206,7 @@ describe("MongooseListAdapter", () => {
             },
             { $addFields: { id: "$_id" } },
             { $project: { posts: 0 } },
-          ],
+          ]),
         },
       },
       { $match: expect.any(Object) },

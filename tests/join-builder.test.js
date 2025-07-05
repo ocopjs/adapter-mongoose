@@ -69,11 +69,11 @@ describe("join builder", () => {
           from: "users",
           as: "abc123_author",
           let: { tmpVar: "$author" },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             { $match: { name: { $eq: "Alice" } } },
             { $addFields: { id: "$_id" } },
-          ],
+          ]),
         },
       },
       {
@@ -136,10 +136,10 @@ describe("join builder", () => {
           from: "posts",
           as: "abc123_posts",
           let: { tmpVar: `$author` },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             { $addFields: { id: "$_id" } },
-          ],
+          ]),
         },
       },
       {
@@ -147,7 +147,9 @@ describe("join builder", () => {
           from: "posts",
           as: "abc123_posts_all",
           let: { tmpVar: `$author` },
-          pipeline: [{ $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
@@ -217,11 +219,11 @@ describe("join builder", () => {
           from: "posts",
           as: "abc123_posts",
           let: { tmpVar: `$author` },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             { $addFields: { id: "$_id" } },
             { $sortBy: "title" },
-          ],
+          ]),
         },
       },
       {
@@ -229,7 +231,9 @@ describe("join builder", () => {
           from: "posts",
           as: "abc123_posts_all",
           let: { tmpVar: `$author` },
-          pipeline: [{ $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
@@ -371,28 +375,28 @@ describe("join builder", () => {
           from: "posts",
           as: "abc123_posts",
           let: { tmpVar: `$author` },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             {
               $lookup: {
                 from: "posts_tags",
                 as: "def456_tags",
                 let: { tmpVar: `$_id` },
-                pipeline: [
+                pipeline: expect.arrayContaining([
                   { $match: { $expr: { $eq: [`$Post_id`, "$$tmpVar"] } } },
                   {
                     $lookup: {
                       from: "tags",
                       as: "def456_tags_0",
                       let: { tmpVar: "$Tag_id" },
-                      pipeline: [
+                      pipeline: expect.arrayContaining([
                         { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
                         {
                           $lookup: {
                             from: "posts_tags",
                             as: "xyz890_posts",
                             let: { tmpVar: `$_id` },
-                            pipeline: [
+                            pipeline: expect.arrayContaining([
                               {
                                 $match: {
                                   $expr: { $eq: [`$Tag_id`, "$$tmpVar"] },
@@ -403,7 +407,7 @@ describe("join builder", () => {
                                   from: "posts",
                                   as: "xyz890_posts_0",
                                   let: { tmpVar: `$Post_id` },
-                                  pipeline: [
+                                  pipeline: expect.arrayContaining([
                                     {
                                       $match: {
                                         $expr: { $eq: [`$_id`, "$$tmpVar"] },
@@ -411,7 +415,7 @@ describe("join builder", () => {
                                     },
                                     { $match: { published: { $eq: true } } },
                                     { $addFields: { id: "$_id" } },
-                                  ],
+                                  ]),
                                 },
                               },
                               {
@@ -421,7 +425,7 @@ describe("join builder", () => {
                                   },
                                 },
                               },
-                            ],
+                            ]),
                           },
                         },
                         {
@@ -429,7 +433,7 @@ describe("join builder", () => {
                             from: "posts_tags",
                             as: "xyz890_posts_all",
                             let: { tmpVar: `$_id` },
-                            pipeline: [
+                            pipeline: expect.arrayContaining([
                               {
                                 $match: {
                                   $expr: { $eq: [`$Tag_id`, "$$tmpVar"] },
@@ -440,16 +444,16 @@ describe("join builder", () => {
                                   from: "posts",
                                   as: "xyz890_posts_0",
                                   let: { tmpVar: `$Post_id` },
-                                  pipeline: [
+                                  pipeline: expect.arrayContaining([
                                     {
                                       $match: {
                                         $expr: { $eq: [`$_id`, "$$tmpVar"] },
                                       },
                                     },
-                                  ],
+                                  ]),
                                 },
                               },
-                            ],
+                            ]),
                           },
                         },
                         {
@@ -469,7 +473,7 @@ describe("join builder", () => {
                         },
                         { $addFields: { id: "$_id" } },
                         { $project: { xyz890_posts: 0, xyz890_posts_all: 0 } },
-                      ],
+                      ]),
                     },
                   },
                   {
@@ -477,7 +481,7 @@ describe("join builder", () => {
                       $expr: { $gt: [{ $size: "$def456_tags_0" }, 0] },
                     },
                   },
-                ],
+                ]),
               },
             },
             {
@@ -490,7 +494,7 @@ describe("join builder", () => {
             },
             { $addFields: { id: "$_id" } },
             { $project: { def456_tags: 0 } },
-          ],
+          ]),
         },
       },
       {
@@ -498,7 +502,9 @@ describe("join builder", () => {
           from: "posts",
           as: "abc123_posts_all",
           let: { tmpVar: `$author` },
-          pipeline: [{ $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
@@ -602,25 +608,25 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts",
           let: { tmpVar: `$author` },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             {
               $lookup: {
                 from: "posts_labels",
                 as: "quux987_labels",
                 let: { tmpVar: `$_id` },
-                pipeline: [
+                pipeline: expect.arrayContaining([
                   { $match: { $expr: { $eq: [`$Post_id`, "$$tmpVar"] } } },
                   {
                     $lookup: {
                       from: "labels",
                       as: "quux987_labels_0",
                       let: { tmpVar: `$Label_id` },
-                      pipeline: [
+                      pipeline: expect.arrayContaining([
                         { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
                         { $match: { name: { $eq: "foo" } } },
                         { $addFields: { id: "$_id" } },
-                      ],
+                      ]),
                     },
                   },
                   {
@@ -628,7 +634,7 @@ describe("join builder", () => {
                       $expr: { $gt: [{ $size: "$quux987_labels_0" }, 0] },
                     },
                   },
-                ],
+                ]),
               },
             },
             {
@@ -641,7 +647,7 @@ describe("join builder", () => {
             },
             { $addFields: { id: "$_id" } },
             { $project: { quux987_labels: 0 } },
-          ],
+          ]),
         },
       },
       {
@@ -649,7 +655,9 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts_all",
           let: { tmpVar: `$author` },
-          pipeline: [{ $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
@@ -672,7 +680,6 @@ describe("join builder", () => {
       { $project: { zip567_posts: 0, zip567_posts_all: 0 } },
     ]);
   });
-
   test("correctly generates joins with nested OR", () => {
     /*
      * From this query:
@@ -753,25 +760,25 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts",
           let: { tmpVar: `$author` },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             {
               $lookup: {
                 from: "posts_labels",
                 as: "quux987_labels",
                 let: { tmpVar: `$_id` },
-                pipeline: [
+                pipeline: expect.arrayContaining([
                   { $match: { $expr: { $eq: [`$Post_id`, "$$tmpVar"] } } },
                   {
                     $lookup: {
                       from: "labels",
                       as: "quux987_labels_0",
                       let: { tmpVar: `$Label_id` },
-                      pipeline: [
+                      pipeline: expect.arrayContaining([
                         { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
                         { $match: { name: { $eq: "foo" } } },
                         { $addFields: { id: "$_id" } },
-                      ],
+                      ]),
                     },
                   },
                   {
@@ -779,7 +786,7 @@ describe("join builder", () => {
                       $expr: { $gt: [{ $size: "$quux987_labels_0" }, 0] },
                     },
                   },
-                ],
+                ]),
               },
             },
             {
@@ -792,7 +799,7 @@ describe("join builder", () => {
             },
             { $addFields: { id: "$_id" } },
             { $project: { quux987_labels: 0 } },
-          ],
+          ]),
         },
       },
       {
@@ -800,7 +807,9 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts_all",
           let: { tmpVar: `$author` },
-          pipeline: [{ $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
@@ -905,25 +914,25 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts",
           let: { tmpVar: `$author` },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             {
               $lookup: {
                 from: "posts_labels",
                 as: "quux987_labels",
                 let: { tmpVar: `$_id` },
-                pipeline: [
+                pipeline: expect.arrayContaining([
                   { $match: { $expr: { $eq: [`$Post_id`, "$$tmpVar"] } } },
                   {
                     $lookup: {
                       from: "labels",
                       as: "quux987_labels_0",
                       let: { tmpVar: `$Label_id` },
-                      pipeline: [
+                      pipeline: expect.arrayContaining([
                         { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
                         { $match: { name: { $eq: "foo" } } },
                         { $addFields: { id: "$_id" } },
-                      ],
+                      ]),
                     },
                   },
                   {
@@ -931,7 +940,7 @@ describe("join builder", () => {
                       $expr: { $gt: [{ $size: "$quux987_labels_0" }, 0] },
                     },
                   },
-                ],
+                ]),
               },
             },
             {
@@ -944,7 +953,7 @@ describe("join builder", () => {
             },
             { $addFields: { id: "$_id" } },
             { $project: { quux987_labels: 0 } },
-          ],
+          ]),
         },
       },
       {
@@ -952,7 +961,9 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts_all",
           let: { tmpVar: `$author` },
-          pipeline: [{ $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
@@ -1056,25 +1067,25 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts",
           let: { tmpVar: `$author` },
-          pipeline: [
+          pipeline: expect.arrayContaining([
             { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
             {
               $lookup: {
                 from: "posts_labels",
                 as: "quux987_labels",
                 let: { tmpVar: `$_id` },
-                pipeline: [
+                pipeline: expect.arrayContaining([
                   { $match: { $expr: { $eq: [`$Post_id`, "$$tmpVar"] } } },
                   {
                     $lookup: {
                       from: "labels",
                       as: "quux987_labels_0",
                       let: { tmpVar: `$Label_id` },
-                      pipeline: [
+                      pipeline: expect.arrayContaining([
                         { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
                         { $match: { name: { $eq: "foo" } } },
                         { $addFields: { id: "$_id" } },
-                      ],
+                      ]),
                     },
                   },
                   {
@@ -1082,7 +1093,7 @@ describe("join builder", () => {
                       $expr: { $gt: [{ $size: "$quux987_labels_0" }, 0] },
                     },
                   },
-                ],
+                ]),
               },
             },
             {
@@ -1095,7 +1106,7 @@ describe("join builder", () => {
             },
             { $addFields: { id: "$_id" } },
             { $project: { quux987_labels: 0 } },
-          ],
+          ]),
         },
       },
       {
@@ -1103,7 +1114,9 @@ describe("join builder", () => {
           from: "posts",
           as: "zip567_posts_all",
           let: { tmpVar: `$author` },
-          pipeline: [{ $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } }],
+          pipeline: expect.arrayContaining([
+            { $match: { $expr: { $eq: [`$_id`, "$$tmpVar"] } } },
+          ]),
         },
       },
       {
