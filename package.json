@@ -31,8 +31,8 @@
     "@ocopjs/common": "^1.1.2",
     "@ocopjs/utils": "^1.0.7",
     "bson": "^6.10.4",
-    "mongoose": "^8.16.1",
-    "mongodb": "^6.17.0"
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.1"
   },
   "devDependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
@@ -45,6 +45,7 @@
     "mongodb-memory-server-core": "^10.1.4",
     "p-settle": "^4.1.1",
     "p-waterfall": "^3.0.0",
+    "pluralize": "^8.0.0",
     "prettier": "^3.2.5",
     "semantic-release": "^23.0.2",
     "tsup": "^8.0.2",
