@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-const pSettle = require("p-settle");
 const {
+  pSettle,
   arrayToObject,
   escapeRegExp,
   pick,

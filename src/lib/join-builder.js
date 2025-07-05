@@ -1,4 +1,4 @@
-const { flatten, defaultObj, objMerge } = require("@ocopjs/utils");
+const { flatten, defaultObj } = require("@ocopjs/utils");
 
 /**
  * Format of input object:

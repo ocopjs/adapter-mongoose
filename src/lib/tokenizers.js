@@ -1,5 +1,6 @@
 const cuid2 = require("@paralleldrive/cuid2");
-const { objMerge, getType, escapeRegExp } = require("@ocopjs/utils");
+const { objMerge, getType } = require("@ocopjs/utils");
+
 const getRelatedListAdapterFromQueryPath = (listAdapter, queryPath) => {
   if (!listAdapter) {
     throw new Error("Must provide a list adapter instance");
