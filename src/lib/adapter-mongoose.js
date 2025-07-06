@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const {
-  pSettle,
   arrayToObject,
   escapeRegExp,
   pick,
@@ -14,7 +13,6 @@ const {
   resolveAllKeys,
   versionGreaterOrEqualTo,
 } = require("@ocopjs/utils");
-
 const {
   BaseOcopAdapter,
   BaseListAdapter,
@@ -23,6 +21,7 @@ const {
 
 const { pipelineBuilder } = require("./join-builder");
 const { queryParser } = require("./query-parser");
+const { default: pSettle } = require("p-settle");
 
 const debugMongoose = () => !!process.env.DEBUG_MONGOOSE;
 
@@ -60,7 +59,6 @@ class MongooseAdapter extends BaseOcopAdapter {
     if (!uri) {
       throw new Error(`No MongoDB connection URI specified.`);
     }
-
     await this.mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -97,7 +95,6 @@ class MongooseAdapter extends BaseOcopAdapter {
       {},
       { ...DEFAULT_MODEL_SCHEMA_OPTIONS },
     );
-
     const columnKey = `${left.listKey}.${left.path}`;
     const leftFkPath = columnNames[columnKey].near;
 
