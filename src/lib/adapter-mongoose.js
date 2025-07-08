@@ -380,8 +380,8 @@ class MongooseListAdapter extends BaseListAdapter {
           return (
             await this._getModel(tableName).create(
               values.map((id) => ({
-                [near]: mongoose.Types.ObjectId(itemId),
-                [far]: mongoose.Types.ObjectId(id),
+                [near]: mongoose.Types.ObjectId.createFromHexString(itemId),
+                [far]: mongoose.Types.ObjectId.createFromHexString(id),
               })),
             )
           ).map((x) => x[far]);
@@ -459,7 +459,13 @@ class MongooseListAdapter extends BaseListAdapter {
           }
           const currentRefIds = (
             await this._getModel(tableName).aggregate([
-              { $match: { [matchCol]: mongoose.Types.ObjectId(item.id) } },
+              {
+                $match: {
+                  [matchCol]: mongoose.Types.ObjectId.createFromHexString(
+                    item.id,
+                  ),
+                },
+              },
             ])
           ).map((x) => x[selectCol].toString());
 
@@ -474,7 +480,9 @@ class MongooseListAdapter extends BaseListAdapter {
                   { [matchCol]: { $eq: item._id } },
                   {
                     [selectCol]: {
-                      $in: needsDelete.map((id) => mongoose.Types.ObjectId(id)),
+                      $in: needsDelete.map((id) =>
+                        mongoose.Types.ObjectId.createFromHexString(id),
+                      ),
                     },
                   },
                 ],
@@ -483,7 +491,9 @@ class MongooseListAdapter extends BaseListAdapter {
               await this._getModel(tableName).updateMany(
                 {
                   [selectCol]: {
-                    $in: needsDelete.map((id) => mongoose.Types.ObjectId(id)),
+                    $in: needsDelete.map((id) =>
+                      mongoose.Types.ObjectId.createFromHexString(id),
+                    ),
                   },
                 },
                 { [columnName]: null },
@@ -513,7 +523,7 @@ class MongooseListAdapter extends BaseListAdapter {
   }
 
   async _delete(id) {
-    id = mongoose.Types.ObjectId(id);
+    id = mongoose.Types.ObjectId.createFromHexString(id);
     // Traverse all other lists and remove references to this item
     // We can't just traverse our own fields, because we might have been
     // a silent partner in a relationship, so we have no self-knowledge of it.
@@ -591,7 +601,7 @@ class MongooseListAdapter extends BaseListAdapter {
           {
             $match: {
               [columnNames[columnKey].near]: {
-                $eq: mongoose.Types.ObjectId(from.fromId),
+                $eq: mongoose.Types.ObjectId.createFromHexString(from.fromId),
               },
             },
           },
@@ -599,7 +609,13 @@ class MongooseListAdapter extends BaseListAdapter {
         ids = ids.map((x) => x[columnNames[columnKey].far]);
       } else {
         ids = await this._getModel(tableName).aggregate([
-          { $match: { [columnName]: mongoose.Types.ObjectId(from.fromId) } },
+          {
+            $match: {
+              [columnName]: mongoose.Types.ObjectId.createFromHexString(
+                from.fromId,
+              ),
+            },
+          },
         ]);
         ids = ids.map((x) => x._id);
       }
